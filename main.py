@@ -240,7 +240,7 @@ def create_pretraining_set(input_file, json_file):
     content_list = []
 
     chunks, content = sentence_chunking_algorithm(
-        input_file, CHUNK_SIZE
+        input_file, 2000
     )
     sentence_chunks += chunks
     content_list.append(content)
