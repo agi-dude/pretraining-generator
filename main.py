@@ -1,13 +1,8 @@
+import io
 import json
 import os
 import re
-from tqdm import tqdm
-
-import re
-
-import io
-import chardet
-import os
+import argparse
 
 try:
     from PIL import Image
@@ -253,3 +248,10 @@ def create_pretraining_set(input_file, json_file):
             write = json.dumps(data, ensure_ascii=False)
             file.write(write + "\n")
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument('infile')
+parser.add_argument('outfile')
+
+args = parser.parse_args()
+create_pretraining_set(args.infile, args.outfile)
