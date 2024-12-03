@@ -4,6 +4,8 @@ import os
 import re
 import argparse
 
+from tqdm import tqdm
+
 try:
     from PIL import Image
     from pdf2image import convert_from_path
@@ -230,15 +232,15 @@ def sentence_chunking_algorithm(file_path, max_char_length=1900):
     return chunks_with_source, content
 
 
-def create_pretraining_set(input_file, json_file):
+def create_pretraining_set(input_folder, json_file):
     sentence_chunks = []
     content_list = []
-
-    chunks, content = sentence_chunking_algorithm(
-        input_file, 2000
-    )
-    sentence_chunks += chunks
-    content_list.append(content)
+    for source_text in tqdm(os.listdir(input_folder), desc="Reading, OCR-ing, and Chunking Input Files..."):
+        chunks, content = sentence_chunking_algorithm(
+            source_text, 2000
+        )
+        sentence_chunks += chunks
+        content_list.append(content)
 
     if os.path.exists(json_file):
         os.remove(json_file)
@@ -250,8 +252,8 @@ def create_pretraining_set(input_file, json_file):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('infile')
+parser.add_argument('infolder')
 parser.add_argument('outfile')
 
 args = parser.parse_args()
-create_pretraining_set(args.infile, args.outfile)
+create_pretraining_set(args.infolder, args.outfile)
