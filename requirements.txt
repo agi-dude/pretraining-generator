@@ -1,2 +1,2 @@
 chardet~=5.2.0
-tqdm~=4.67.1
+easygui~=0.98.3

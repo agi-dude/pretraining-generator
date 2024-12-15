@@ -2,9 +2,7 @@ import io
 import json
 import os
 import re
-import argparse
-
-from tqdm import tqdm
+import easygui
 
 try:
     from PIL import Image
@@ -235,12 +233,15 @@ def sentence_chunking_algorithm(file_path, max_char_length=1900):
 def create_pretraining_set(input_folder, json_file):
     sentence_chunks = []
     content_list = []
-    for source_text in tqdm(os.listdir(input_folder), desc="Reading, OCR-ing, and Chunking Input Files..."):
+    input_files = [os.path.join(input_folder, file) for file in os.listdir(input_folder)]
+    total_files = len(input_files)
+    for i, source_text in enumerate(input_files):
         chunks, content = sentence_chunking_algorithm(
             source_text, 2000
         )
         sentence_chunks += chunks
         content_list.append(content)
+        easygui.progressbar(msg="Reading, OCR-ing, and Chunking Input Files...", title="Progress", count=i+1, total=total_files)
 
     if os.path.exists(json_file):
         os.remove(json_file)
@@ -251,9 +252,10 @@ def create_pretraining_set(input_folder, json_file):
             file.write(write + "\n")
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('infolder')
-parser.add_argument('outfile')
+input_folder = easygui.diropenbox(msg="Select the input folder", title="Input Folder")
+output_file = easygui.filesavebox(msg="Select the output file", title="Output File", default="pretraining.jsonl")
 
-args = parser.parse_args()
-create_pretraining_set(args.infolder, args.outfile)
+if input_folder and output_file:
+    create_pretraining_set(input_folder, output_file)
+else:
+    easygui.msgbox("Input folder or output file not selected. Exiting.", title="Error")
